@@ -11,12 +11,91 @@ namespace LuminoDiodeBasedNumber
 	{
 		public const int MinBase = 2;
 		public const int MaxBase = 'Z' - 'A' + 1 + 10;
-		public const int DecimalBase = 10;
 		public const int MaxFractionalDigits = 46; // Проблемы с точностью
 
+
+		#region Is-checks
+		/// <summary>
+		/// Returns true if char exists in any supported base
+		/// </summary>
+		public static bool CharIsValid(char Chr) => Char.IsDigit(Chr) || (Chr >= 'A' && Chr <= 'Z');
+
+		/// <summary>
+		/// Returns true if value exists as char in any supported base
+		/// </summary>
+		public static bool CharValueIsValid(int Val) => Val >= 0 && Val <= ('Z' - 'A' + 1 + 10);
+
+		/// <summary>
+		/// Returns true if the passed Value-string exists in any supported base
+		/// </summary>
+		public static bool StringIsValid(string Str)
+		{
+			if (string.IsNullOrEmpty(Str)) return false;
+			if (Str.StartsWith('-') && Str.Length == 1) return false;
+
+			bool DotOrComaSeen = false;
+			for (int i = Str.StartsWith('-') ? 1 : 0; i < Str.Length; i++)
+			{
+				if (Str[i] == '.' || Str[i] == ',')
+				{
+					if (DotOrComaSeen) return false;
+					else DotOrComaSeen = true;
+					continue;
+				}
+				if (!CharIsValid(Str[i])) return false;
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Returns true if the passed base is supported
+		/// </summary>
+		public static bool BaseIsValid(int Base) => Base >= MinBase && Base <= MaxBase;
+
+		/// <summary>
+		/// Returns true if the passed Value-string exists in the passed Base
+		/// </summary>
+		public static bool StringBaseIsValid(string Str, int Base)
+		{
+			if (string.IsNullOrEmpty(Str)) return false;
+
+			bool DotOrComaSeen = false;
+			char c;
+			for (int i = Str.StartsWith('-') ? 1 : 0; i < Str.Length; i++)
+			{
+				c = Str[i];
+
+				if (Str[i] == '.' || Str[i] == ',')
+				{
+					if (DotOrComaSeen) return false;
+					else DotOrComaSeen = true;
+					continue;
+				}
+
+				if (Base <= 10)
+				{
+					if (!(c >= '0' && c <= ('0' + (Base - 1)))) 
+						return false;
+				}
+				else
+				{
+					if(!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'A' + (Base - 10 - 1)))) 
+						return false;
+				}
+			}
+
+			return true;
+		}
+		#endregion
+
+		#region GetCharForDecimal & GetDecimalForChar
+		/// <summary>
+		/// Returns char representing the passed decimal value
+		/// </summary>
 		public static char GetCharForDecimalValue(int Value)
 		{
-			if (!ValueIsValid(Value))
+			if (!CharValueIsValid(Value))
 				throw new ArgumentException($"Values in range [0;36] only can be converted to chars. Passed value is {Value}.");
 
 			if (Value < 10)
@@ -24,63 +103,40 @@ namespace LuminoDiodeBasedNumber
 			else
 				return (char)('A' + (Value - 10));
 		}
+
+		/// <summary>
+		/// Returns decimal value representing the passed char
+		/// </summary>
 		public static int GetDecimalValueForChar(char Symbol)
 		{
 			if (!CharIsValid(Symbol))
-				throw new ArgumentException($"Chars in range [0;9] & [A;Z] only can be converted to decimals. Passed value is {Symbol}.");
+				throw new ArgumentException($"Chars in range [0;9] & [A;Z] only can be converted to decimals. Passed char is {Symbol}.");
 
 			if (char.IsDigit(Symbol))
 				return Symbol - '0';
 			else
 				return 10 + (Symbol - 'A');
 		}
+		#endregion
 
-		/// <summary>
-		/// Проверка возможности записи переданного символа как десятичного числа
-		/// </summary>
-		public static bool CharIsValid(char Chr) => Char.IsDigit(Chr) || (Chr >= 'A' && Chr <= 'Z');
-		/// <summary>
-		/// Проверка возможности записи переданного десятичного числа как символа
-		/// </summary>
-		public static bool ValueIsValid(int Val) => Val >= 0 && Val <= ('Z' - 'A' + 1 + 10);
-		/// <summary>
-		/// Проверка корректности строки-числа без проверки соответствия его основанию системы счисления.
-		/// </summary>
-		public static bool StringIsValid(string Str)
-		{
-			if (string.IsNullOrEmpty(Str)) return false;
 
-			var ExcludeValidChars = Str.Where(c => !CharIsValid(c));
-			if (!((ExcludeValidChars.Count() == 1 && (ExcludeValidChars.First() == '.' || ExcludeValidChars.First() == ','))
-				|| ExcludeValidChars.Count() == 0)) return false;
-
-			return true;
-		}
-		/// <summary>
-		/// Проверка допустимости числового значения основания. 2 <= Base <= 36
-		/// </summary>
-		public static bool BaseIsValid(int Base) => Base >= MinBase && Base <= MaxBase;
-		/// <summary>
-		/// Проверка отсутствия в строке символов, не входящих в систему счисления с переданным основанием.
-		/// </summary>
-		public static bool StringBaseIsValid(string Str, int Base) =>
-			Base <= 10 ?
-				Str.All(c => c >= '0' && c <= ('0' + (Base - 1)) || c=='.' || c == ',') :
-				Str.All(c => (c >= '0' && c <= '9') || (c >= 'A' && c <= 'A' + (Base - 10 - 1)) || c == '.' || c == ',');
-
+		//Строки обрабатываются после отбрасывания минуса в начале строке, в конце исполнения метода минус возвращается.
 		#region From any base to decimal base
 		public static double ToDecimal(string Value, int CurrentBase)
 		{
+			bool neg = Value.StartsWith('-');
+			if(neg) Value = Value.Substring(1);
+
 			if (!StringIsValid(Value))
 				throw new FormatException("Invalid format of input Value string");
-			if(!StringBaseIsValid(Value,CurrentBase))
+			if (!StringBaseIsValid(Value, CurrentBase))
 				throw new FormatException("Passed string does not currespond with passed base");
 
 			var ValueSplitted = Value.Split(",.".ToCharArray());
 
-			return ValueSplitted.Length == 1 ?
+			return (neg ? -1 : 1) * (ValueSplitted.Length == 1 ?
 				IntPartToDecimal(ValueSplitted[0], CurrentBase) :
-				IntPartToDecimal(ValueSplitted[0], CurrentBase) + FractionalPartToDecimal(ValueSplitted[1], CurrentBase);
+				IntPartToDecimal(ValueSplitted[0], CurrentBase) + FractionalPartToDecimal(ValueSplitted[1], CurrentBase));
 		}
 		public static double IntPartToDecimal(string IntPartOfValue, int CurrentBase)
 		{
@@ -119,7 +175,7 @@ namespace LuminoDiodeBasedNumber
 		public static int DigitsInFractionalPart(double DecimalValue)
 		{
 			int Count = 0;
-			for (; ((DecimalValue % 1) * Math.Pow(10, MaxFractionalDigits)) > 1 && Count<MaxFractionalDigits; Count++)
+			for (; ((DecimalValue % 1) * Math.Pow(10, MaxFractionalDigits)) > 1 && Count < MaxFractionalDigits; Count++)
 			{
 				DecimalValue *= 10;
 			}
@@ -128,32 +184,37 @@ namespace LuminoDiodeBasedNumber
 
 		public static string FromDecimalToNewBase(double DecimalValue, int NewBase)
 		{
-			if (NewBase == 10) return DecimalValue.ToString();
+			var neg = DecimalValue < 0;
+			if (neg) DecimalValue *= -1;
+
+			if (NewBase == 10) return (neg ? "-" : String.Empty)+DecimalValue.ToString();
 			if (!(MinBase <= NewBase && NewBase <= MaxBase))
 				throw new ArgumentException("Invalid base");
 
-			string OutValue=string.Empty;
+
+			string OutValue = string.Empty;
 
 			var IntDigits = DigitsInIntegerPart(DecimalValue);
 			var FractDigits = DigitsInFractionalPart(DecimalValue);
 
 			var IntPart = (int)DecimalValue;
-			for(int i = 0; IntPart>0; i++)
+			for (int i = 0; IntPart > 0; i++)
 			{
 				OutValue += GetCharForDecimalValue(IntPart % NewBase);
 				IntPart /= NewBase;
 			}
-			OutValue=new string(OutValue.Reverse().ToArray());
+			OutValue = new string(OutValue.Reverse().ToArray());
 			OutValue += '.';
-			var FractPart = (DecimalValue % 1)*NewBase;
+			var FractPart = (DecimalValue % 1) * NewBase;
 			int CalcTimes = MaxFractionalDigits - NewBase;
-			for(int i = 0; i< CalcTimes; i++)
+			for (int i = 0; i < CalcTimes; i++)
 			{
 				OutValue += GetCharForDecimalValue((int)(FractPart));
-				FractPart = (FractPart%1 * NewBase);
+				FractPart = (FractPart % 1 * NewBase);
 			}
 
-			return OutValue;
+			Console.Write(String.Empty);
+			return (neg ? "-" : String.Empty) + OutValue;
 		}
 
 		#endregion
