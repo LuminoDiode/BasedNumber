@@ -59,6 +59,8 @@ namespace LuminoDiodeBasedNumber
 		/// </summary>
 		public static bool CharBaseIsValid(char Chr, int Base)
 		{
+			if (Chr == ',' || Chr == '.') return true;
+
 			if (Base <= 10)
 			{
 				if (!(Chr >= '0' && Chr <= ('0' + (Base - 1))))

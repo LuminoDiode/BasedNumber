@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>LuminoDiode.BasedNumber</PackageId>
-    <Version>1.0.0-aplha9</Version>
+    <Version>1.0.0-beta2</Version>
     <Authors>Rodion Ryzhov</Authors>
     <Company>Rodion Ryzhov</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
