@@ -9,10 +9,11 @@ namespace LuminoDiodeBasedNumber
 {
 	public partial class BasedNumberStatic
 	{
+		#region Consts
 		public const int MinBase = 2;
 		public const int MaxBase = 'Z' - 'A' + 1 + 10;
-		public const int MaxFractionalDigits = 46; // Проблемы с точностью
-
+		public const int MaxFractionalDigits = 40; // Проблемы с точностью
+		#endregion
 
 		#region Is-checks
 		/// <summary>
@@ -23,26 +24,26 @@ namespace LuminoDiodeBasedNumber
 		/// <summary>
 		/// Returns true if value exists as char in any supported base
 		/// </summary>
-		public static bool CharValueIsValid(int Val) => Val >= 0 && Val <= ('Z' - 'A' + 1 + 10);
+		public static bool CharValueIsValid(int Val) => Val >= 0 && Val <= (MaxBase - 1);
 
 		/// <summary>
 		/// Returns true if the passed Value-string exists in any supported base
 		/// </summary>
-		public static bool StringIsValid(string Str)
+		public static bool StringIsValid(string ValueString)
 		{
-			if (string.IsNullOrEmpty(Str)) return false;
-			if (Str.StartsWith('-') && Str.Length == 1) return false;
+			if (string.IsNullOrEmpty(ValueString)) return false;
+			if (ValueString[0] == '-' && ValueString.Length == 1) return false;
 
 			bool DotOrComaSeen = false;
-			for (int i = Str.StartsWith('-') ? 1 : 0; i < Str.Length; i++)
+			for (int i = ValueString[0] == '-' ? 1 : 0; i < ValueString.Length; i++)
 			{
-				if (Str[i] == '.' || Str[i] == ',')
+				if (ValueString[i] == '.' || ValueString[i] == ',')
 				{
 					if (DotOrComaSeen) return false;
 					else DotOrComaSeen = true;
 					continue;
 				}
-				if (!CharIsValid(Str[i])) return false;
+				if (!CharIsValid(ValueString[i])) return false;
 			}
 
 			return true;
@@ -54,36 +55,34 @@ namespace LuminoDiodeBasedNumber
 		public static bool BaseIsValid(int Base) => Base >= MinBase && Base <= MaxBase;
 
 		/// <summary>
+		/// Returns true if the passed char exists in the passed Base
+		/// </summary>
+		public static bool CharBaseIsValid(char Chr, int Base)
+		{
+			if (Base <= 10)
+			{
+				if (!(Chr >= '0' && Chr <= ('0' + (Base - 1))))
+					return false;
+			}
+			else
+			{
+				if (!((Chr >= '0' && Chr <= '9') || (Chr >= 'A' && Chr <= 'A' + (Base - 10 - 1))))
+					return false;
+			}
+
+			return true;
+		}
+
+		/// <summary>
 		/// Returns true if the passed Value-string exists in the passed Base
 		/// </summary>
 		public static bool StringBaseIsValid(string Str, int Base)
 		{
 			if (string.IsNullOrEmpty(Str)) return false;
 
-			bool DotOrComaSeen = false;
-			char c;
 			for (int i = Str.StartsWith('-') ? 1 : 0; i < Str.Length; i++)
-			{
-				c = Str[i];
-
-				if (Str[i] == '.' || Str[i] == ',')
-				{
-					if (DotOrComaSeen) return false;
-					else DotOrComaSeen = true;
-					continue;
-				}
-
-				if (Base <= 10)
-				{
-					if (!(c >= '0' && c <= ('0' + (Base - 1)))) 
-						return false;
-				}
-				else
-				{
-					if(!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'A' + (Base - 10 - 1)))) 
-						return false;
-				}
-			}
+				if (!CharBaseIsValid(Str[i], Base))
+					return false;
 
 			return true;
 		}
@@ -120,12 +119,14 @@ namespace LuminoDiodeBasedNumber
 		#endregion
 
 
+		// DOWN TO BE CHECKED
+
 		//Строки обрабатываются после отбрасывания минуса в начале строке, в конце исполнения метода минус возвращается.
 		#region From any base to decimal base
 		public static double ToDecimal(string Value, int CurrentBase)
 		{
 			bool neg = Value.StartsWith('-');
-			if(neg) Value = Value.Substring(1);
+			if (neg) Value = Value.Substring(1);
 
 			if (!StringIsValid(Value))
 				throw new FormatException("Invalid format of input Value string");
@@ -187,7 +188,7 @@ namespace LuminoDiodeBasedNumber
 			var neg = DecimalValue < 0;
 			if (neg) DecimalValue *= -1;
 
-			if (NewBase == 10) return (neg ? "-" : String.Empty)+DecimalValue.ToString();
+			if (NewBase == 10) return (neg ? "-" : String.Empty) + DecimalValue.ToString();
 			if (!(MinBase <= NewBase && NewBase <= MaxBase))
 				throw new ArgumentException("Invalid base");
 
