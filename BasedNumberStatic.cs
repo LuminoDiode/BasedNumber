@@ -19,7 +19,7 @@ namespace LuminoDiodeBasedNumber
 		/// <summary>
 		/// Returns true if char exists in any supported base
 		/// </summary>
-		public static bool CharIsValid(char Chr) => Char.IsDigit(Chr) || (Chr >= 'A' && Chr <= 'Z');
+		public static bool CharIsValid(char Chr) => (Chr >= '0' && Chr <= '9') || (Chr >= 'A' && Chr <= 'Z');
 
 		/// <summary>
 		/// Returns true if value exists as char in any supported base
@@ -59,8 +59,6 @@ namespace LuminoDiodeBasedNumber
 		/// </summary>
 		public static bool CharBaseIsValid(char Chr, int Base)
 		{
-			if (Chr == ',' || Chr == '.') return true;
-
 			if (Base <= 10)
 			{
 				if (!(Chr >= '0' && Chr <= ('0' + (Base - 1))))
@@ -83,8 +81,9 @@ namespace LuminoDiodeBasedNumber
 			if (string.IsNullOrEmpty(Str)) return false;
 
 			for (int i = Str.StartsWith('-') ? 1 : 0; i < Str.Length; i++)
-				if (!CharBaseIsValid(Str[i], Base))
-					return false;
+				if (!(Str[i] == ',' || Str[i] == '.'))
+					if (!CharBaseIsValid(Str[i], Base))
+						return false;
 
 			return true;
 		}
@@ -135,38 +134,34 @@ namespace LuminoDiodeBasedNumber
 			if (!StringBaseIsValid(Value, CurrentBase))
 				throw new FormatException("Passed string does not currespond with passed base");
 
-			var ValueSplitted = Value.Split(",.".ToCharArray());
+			var ValueSplitted = Value.Split('.');
 
 			return (neg ? -1 : 1) * (ValueSplitted.Length == 1 ?
 				IntPartToDecimal(ValueSplitted[0], CurrentBase) :
 				IntPartToDecimal(ValueSplitted[0], CurrentBase) + FractionalPartToDecimal(ValueSplitted[1], CurrentBase));
 		}
-		public static double IntPartToDecimal(string IntPartOfValue, int CurrentBase)
+		private static double IntPartToDecimal(string IntPartOfValue, int CurrentBase)
 		{
 			double OutValue = 0;
 
 			for (int i = 0; i < IntPartOfValue.Length; i++)
-			{
 				OutValue += GetDecimalValueForChar(IntPartOfValue[i]) * Math.Pow(CurrentBase, (IntPartOfValue.Length - 1 - i));
-			}
 
 			return OutValue;
 		}
-		public static double FractionalPartToDecimal(string FractionalPartOfValue, int CurrentBase)
+		private static double FractionalPartToDecimal(string FractionalPartOfValue, int CurrentBase)
 		{
 			double OutValue = 0;
 
 			for (int i = 0; i < FractionalPartOfValue.Length; i++)
-			{
 				OutValue += GetDecimalValueForChar(FractionalPartOfValue[i]) * Math.Pow(CurrentBase, -i - 1);
-			}
 
 			return OutValue;
 		}
 		#endregion
 
 		#region From decimal base to any base
-		public static int DigitsInIntegerPart(double DecimalValue)
+		private static int DigitsInIntegerPart(double DecimalValue)
 		{
 			int Count = 0;
 			for (; DecimalValue >= 1; Count++)
@@ -175,7 +170,7 @@ namespace LuminoDiodeBasedNumber
 			}
 			return Count;
 		}
-		public static int DigitsInFractionalPart(double DecimalValue)
+		private static int DigitsInFractionalPart(double DecimalValue)
 		{
 			int Count = 0;
 			for (; ((DecimalValue % 1) * Math.Pow(10, MaxFractionalDigits)) > 1 && Count < MaxFractionalDigits; Count++)
@@ -218,6 +213,11 @@ namespace LuminoDiodeBasedNumber
 
 			Console.Write(String.Empty);
 			return (neg ? "-" : String.Empty) + OutValue;
+		}
+
+		public static string ToNewBase(String Value, int CurrentBase,int NewBase)
+		{
+			return FromDecimalToNewBase(ToDecimal(Value, CurrentBase), NewBase);
 		}
 
 		#endregion
