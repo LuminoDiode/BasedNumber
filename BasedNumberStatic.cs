@@ -80,7 +80,7 @@ namespace LuminoDiodeBasedNumber
 		{
 			if (string.IsNullOrEmpty(Str)) return false;
 
-			for (int i = Str.StartsWith('-') ? 1 : 0; i < Str.Length; i++)
+			for (int i = Str.StartsWith("-") ? 1 : 0; i < Str.Length; i++)
 				if (!(Str[i] == ',' || Str[i] == '.'))
 					if (!CharBaseIsValid(Str[i], Base))
 						return false;
@@ -124,9 +124,13 @@ namespace LuminoDiodeBasedNumber
 
 		//Строки обрабатываются после отбрасывания минуса в начале строке, в конце исполнения метода минус возвращается.
 		#region From any base to decimal base
+
+		/// <summary>
+		/// Converts Value string in passed base to double value
+		/// </summary>
 		public static double ToDecimal(string Value, int CurrentBase)
 		{
-			bool neg = Value.StartsWith('-');
+			bool neg = Value.StartsWith("-");
 			if (neg) Value = Value.Substring(1);
 
 			if (!StringIsValid(Value))
@@ -180,6 +184,9 @@ namespace LuminoDiodeBasedNumber
 			return Count;
 		}
 
+		/// <summary>
+		/// Converts decimal double value to value string in passed base
+		/// </summary>
 		public static string FromDecimalToNewBase(double DecimalValue, int NewBase)
 		{
 			var neg = DecimalValue < 0;
@@ -215,6 +222,9 @@ namespace LuminoDiodeBasedNumber
 			return (neg ? "-" : String.Empty) + OutValue;
 		}
 
+		/// <summary>
+		/// Converts value string from one base to another
+		/// </summary>
 		public static string ToNewBase(String Value, int CurrentBase,int NewBase)
 		{
 			return FromDecimalToNewBase(ToDecimal(Value, CurrentBase), NewBase);

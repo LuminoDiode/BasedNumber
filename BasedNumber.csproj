@@ -2,15 +2,20 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>LuminoDiode.BasedNumber</PackageId>
-    <Version>1.0.0-beta2</Version>
+    <Version>1.0.1</Version>
     <Authors>Rodion Ryzhov</Authors>
     <Company>Rodion Ryzhov</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <DebugType>portable</DebugType>
-    <Description>Namespace "LuminoDiodeBasedNumber" classes "BasedNumber" &amp; "BasedNumberStatic"</Description>
+    <Description>Package allows you to create value-strings for any numbers in any bases in range of [2; 36].
+Use namespace LuminoDiodeBasedNumber to access 'BasedNumber' and 'BasedNumberStatic' classes.
+The main methods are:
+1. BasedNumberStatic.FromDecimalToNewBase which returns a value-string in passed base for passed decimal value, for example "3G" if you converts 100 (10) to (28) base.
+2. BasedNumberStatic.ToDecimal which returns decimal value of passed string in passed base, for example 46217 if you converts it from ZNT with base 36.
+3. BasedNumberStatic.ToNewBase which returns value-string in new base, for example "22QH" if you converts ZNT (36) to the base of 28.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,8 +34,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Без имени-1.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\Desktop\Без имени-1.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
+  
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageReleaseNotes>Minor improvements</PackageReleaseNotes>
+    <ApplicationIcon>Без имени-1.ico</ApplicationIcon>
+    <PackageIcon>Без имени-1.png</PackageIcon>
+    <RepositoryUrl>https://github.com/LuminoDiode/BasedNumber</RepositoryUrl>
+    <PackageTags>Based Number; Based; BasedNumber; LuminoDiode</PackageTags>
+  </PropertyGroup>
 
 </Project>
