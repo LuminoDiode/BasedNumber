@@ -12,22 +12,22 @@ namespace LuminoDiodeBasedNumber
 		#region Consts
 		public const int MinBase = 2;
 		public const int MaxBase = 'Z' - 'A' + 1 + 10;
-		public const int MaxFractionalDigits = 40; // Проблемы с точностью
+		public const int MaxFractionalDigits = 40; // Precision problems?
 		#endregion
 
 		#region Is-checks
 		/// <summary>
-		/// Returns true if char exists in any supported base
+		/// Returns true if char exists in any supported base, otherwise false.
 		/// </summary>
 		public static bool CharIsValid(char Chr) => (Chr >= '0' && Chr <= '9') || (Chr >= 'A' && Chr <= 'Z');
 
 		/// <summary>
-		/// Returns true if value exists as char in any supported base
+		/// Returns true if value exists as char in any supported base, otherwise false.
 		/// </summary>
 		public static bool CharValueIsValid(int Val) => Val >= 0 && Val <= (MaxBase - 1);
 
 		/// <summary>
-		/// Returns true if the passed Value-string exists in any supported base
+		/// Returns true if the passed Value-string exists in any supported base, otherwise false
 		/// </summary>
 		public static bool StringIsValid(string ValueString)
 		{
@@ -50,12 +50,12 @@ namespace LuminoDiodeBasedNumber
 		}
 
 		/// <summary>
-		/// Returns true if the passed base is supported
+		/// Returns true if the passed base is supported, otherwise false.
 		/// </summary>
 		public static bool BaseIsValid(int Base) => Base >= MinBase && Base <= MaxBase;
 
 		/// <summary>
-		/// Returns true if the passed char exists in the passed Base
+		/// Returns true if the passed char exists in the passed Base, otherwise false.
 		/// </summary>
 		public static bool CharBaseIsValid(char Chr, int Base)
 		{
@@ -74,7 +74,7 @@ namespace LuminoDiodeBasedNumber
 		}
 
 		/// <summary>
-		/// Returns true if the passed Value-string exists in the passed Base
+		/// Returns true if the passed Value-string exists in the passed Base, otherwise false.
 		/// </summary>
 		public static bool StringBaseIsValid(string Str, int Base)
 		{
@@ -91,7 +91,7 @@ namespace LuminoDiodeBasedNumber
 
 		#region GetCharForDecimal & GetDecimalForChar
 		/// <summary>
-		/// Returns char representing the passed decimal value
+		/// Returns char representing the passed decimal value.
 		/// </summary>
 		public static char GetCharForDecimalValue(int Value)
 		{
@@ -105,7 +105,7 @@ namespace LuminoDiodeBasedNumber
 		}
 
 		/// <summary>
-		/// Returns decimal value representing the passed char
+		/// Returns decimal value representing the passed char.
 		/// </summary>
 		public static int GetDecimalValueForChar(char Symbol)
 		{
@@ -119,14 +119,11 @@ namespace LuminoDiodeBasedNumber
 		}
 		#endregion
 
-
-		// DOWN TO BE CHECKED
-
-		//Строки обрабатываются после отбрасывания минуса в начале строке, в конце исполнения метода минус возвращается.
+		// Strings are being processed without minus char, it is being inserted back at the end of the function.
 		#region From any base to decimal base
 
 		/// <summary>
-		/// Converts Value string in passed base to double value
+		/// Converts Value-string with passed base to decimal value and returns it as double.
 		/// </summary>
 		public static double ToDecimal(string Value, int CurrentBase)
 		{
@@ -185,7 +182,7 @@ namespace LuminoDiodeBasedNumber
 		}
 
 		/// <summary>
-		/// Converts decimal double value to value string in passed base
+		/// Converts decimal value to value string with passed base.
 		/// </summary>
 		public static string FromDecimalToNewBase(double DecimalValue, int NewBase)
 		{
@@ -223,14 +220,12 @@ namespace LuminoDiodeBasedNumber
 		}
 
 		/// <summary>
-		/// Converts value string from one base to another
+		/// Converts value string from one base to another.
 		/// </summary>
-		public static string ToNewBase(String Value, int CurrentBase,int NewBase)
+		public static string ToNewBase(string Value, int CurrentBase,int NewBase)
 		{
 			return FromDecimalToNewBase(ToDecimal(Value, CurrentBase), NewBase);
 		}
-
 		#endregion
-
 	}
 }
