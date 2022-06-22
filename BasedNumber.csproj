@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -24,10 +24,12 @@ The main methods are:
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Optimize>False</Optimize>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,15 +39,16 @@ The main methods are:
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
+    <Content Include="icon.ico" />
   </ItemGroup>
   
   <PropertyGroup>
     <IsPackable>true</IsPackable>
-    <PackageReleaseNotes>Minor improvements</PackageReleaseNotes>
-    <PackageIcon>Без имени-1.png</PackageIcon>
+    <PackageReleaseNotes>Useability improvements</PackageReleaseNotes>
+    <PackageIcon>icon.ico</PackageIcon>
     <RepositoryUrl>https://github.com/LuminoDiode/BasedNumber</RepositoryUrl>
     <PackageTags>Based Number; Based; BasedNumber; LuminoDiode</PackageTags>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 </Project>
