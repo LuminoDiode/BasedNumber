@@ -39,16 +39,17 @@ The main methods are:
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="icon.ico" />
+    <None Include="icon.ico" />
+		<None Include="icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
   
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <PackageReleaseNotes>Useability improvements</PackageReleaseNotes>
-    <PackageIcon>icon.ico</PackageIcon>
+    <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/LuminoDiode/BasedNumber</RepositoryUrl>
     <PackageTags>Based Number; Based; BasedNumber; LuminoDiode</PackageTags>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
     <PlatformTarget>x64</PlatformTarget>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 </Project>
